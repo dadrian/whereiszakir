@@ -15,6 +15,11 @@ import (
 	"google.golang.org/api/calendar/v3"
 )
 
+type zcache struct {
+	Location string
+	When     time.Time
+}
+
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
 func getClient(ctx context.Context, config *jwt.Config) *http.Client {
@@ -55,11 +60,13 @@ func main() {
 		log.Fatalf("Unable to retrieve calendar Client %v", err)
 	}
 
+	cache := new(zcache)
+
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		obj := struct {
 			Location string `json:"location"`
 		}{
-			Location: where(srv, cid),
+			Location: where(srv, cid, cache),
 		}
 		b, err := json.Marshal(obj)
 		if err != nil {
@@ -75,9 +82,16 @@ func main() {
 	http.ListenAndServe("localhost:9720", nil)
 }
 
-func where(srv *calendar.Service, cid string) string {
+func where(srv *calendar.Service, cid string, cache *zcache) string {
 
-	t := time.Now().Format(time.RFC3339)
+	n := time.Now()
+	expiry := cache.When.Add(time.Minute)
+
+	if time.Now().Before(expiry) {
+		return cache.Location
+	}
+
+	t := n.Format(time.RFC3339)
 	events, err := srv.Events.List(cid).ShowDeleted(false).
 		SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 
@@ -93,7 +107,6 @@ func where(srv *calendar.Service, cid string) string {
 			if err != nil {
 				log.Fatalf("could not get end time: %v", err)
 			}
-			n := time.Now()
 			parts := strings.Split(i.Summary, "(")
 			name := parts[0]
 			name = strings.Trim(name, " ")
@@ -105,6 +118,9 @@ func where(srv *calendar.Service, cid string) string {
 
 	if current == "" {
 		current = `¯\_(ツ)_/¯`
+	} else {
+		cache.Location = current
+		cache.When = n
 	}
 	return current
 }
