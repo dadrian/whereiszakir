@@ -71,6 +71,7 @@ func main() {
 	}
 
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/where", handler)
 	http.ListenAndServe("localhost:9720", nil)
 }
 
