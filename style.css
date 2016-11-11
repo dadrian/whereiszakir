@@ -1,0 +1,27 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  text-align: center;
+
+  /* Fill the entire height of the page above the footer. */
+  flex: 1;
+
+  /* Center child items */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#content h1 {
+  margin: 0em auto;
+}
