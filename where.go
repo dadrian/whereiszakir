@@ -38,7 +38,9 @@ func GetTimeFromEventTime(e *calendar.EventDateTime) (time.Time, error) {
 func main() {
 
 	var cid string
+	var keyPath string
 	flag.StringVar(&cid, "calendar", "primary", "Zakir travel calendar ID")
+	flag.StringVar(&keyPath, "key", "where-is-zakir-key.json", "path to JSON key")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -87,7 +89,7 @@ func where(srv *calendar.Service, cid string, cache *zcache) string {
 	n := time.Now()
 	expiry := cache.When.Add(time.Minute)
 
-	if time.Now().Before(expiry) {
+	if n.Before(expiry) {
 		return cache.Location
 	}
 
@@ -118,9 +120,8 @@ func where(srv *calendar.Service, cid string, cache *zcache) string {
 
 	if current == "" {
 		current = `¯\_(ツ)_/¯`
-	} else {
-		cache.Location = current
-		cache.When = n
 	}
+	cache.Location = current
+	cache.When = n
 	return current
 }
