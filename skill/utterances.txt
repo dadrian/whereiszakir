@@ -1,0 +1,3 @@
+AMAZON.CancelIntent today
+AMAZON.CancelIntent right now 
+AMAZON.CancelIntent dammit
