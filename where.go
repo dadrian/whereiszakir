@@ -119,7 +119,7 @@ func where(srv *calendar.Service, cid string, cache *zcache) string {
 	}
 
 	if current == "" {
-		current = `¯\_(ツ)_/¯`
+		current = "Ann Arbor"
 	}
 	cache.Location = current
 	cache.When = n
