@@ -16,8 +16,9 @@ import (
 )
 
 type zcache struct {
-	Location string
-	When     time.Time
+	Location        string
+	When            time.Time
+	DefaultLocation string
 }
 
 // getClient uses a Context and Config to retrieve a Token
@@ -39,8 +40,10 @@ func main() {
 
 	var cid string
 	var keyPath string
+	var defaultLocation string
 	flag.StringVar(&cid, "calendar", "primary", "Zakir travel calendar ID")
 	flag.StringVar(&keyPath, "key", "where-is-zakir-key.json", "path to JSON key")
+	flag.StringVar(&defaultLocation, "default-location", "Unknown", "displays when nothing is listed on the calendar")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -63,6 +66,7 @@ func main() {
 	}
 
 	cache := new(zcache)
+	cache.DefaultLocation = defaultLocation
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		obj := struct {
@@ -119,7 +123,7 @@ func where(srv *calendar.Service, cid string, cache *zcache) string {
 	}
 
 	if current == "" {
-		current = "Ann Arbor"
+		current = cache.DefaultLocation
 	}
 	cache.Location = current
 	cache.When = n
