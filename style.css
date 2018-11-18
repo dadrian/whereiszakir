@@ -26,3 +26,10 @@ body {
   margin: 0em auto;
   font-size: 1000%;
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #d7d7d6;
+    background: #1c1c1c;
+  }
+}
