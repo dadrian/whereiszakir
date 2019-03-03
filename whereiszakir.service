@@ -1,0 +1,10 @@
+[Unit]
+Description=Where Is Zakir Dot Com
+After=network.target
+
+[Service]
+Restart=always
+WorkingDirectory=/var/whereiszakir
+EnvironmentFile=/etc/default/whereiszakir
+ExecStart=/var/whereiszakir/whereiszakir -calendar=$WHEREISZAKIR_CALENDAR -key=/etc/whereiszakir/key.json -default-location=Stanford
+User=www-data

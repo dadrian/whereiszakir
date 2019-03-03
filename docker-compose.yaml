@@ -1,0 +1,44 @@
+version: "3"
+services:
+  whereiszakir:
+    image: dadrian/whereiszakir
+    restart: always
+    expose:
+      - '8080'
+    ports:
+      - '8080:8080'
+    volumes:
+       - '/etc/whereiszakir:/etc/whereiszakir'
+    command: [
+      "/app",
+      "-calendar=${WHEREISZAKIR_CALENDAR}",
+      "-default-location=stanford",
+      "-key=/etc/whereiszakir/key.json",
+    ]
+  nginx:
+    image: nginx:1.15.9
+    environment:
+      # see discover/__init__.py
+      - DISCOVER_ENABLE_VSCODE_REMOTE_DEBUGGING
+      - DISCOVER_DATA_PATH
+    ports:
+      - "${DISCOVER_DOCKER_DEBUG_IP_OVERRIDE:-0.0.0.0}:${DISCOVER_DOCKER_DEBUG_PORT_OVERRIDE:-5678}:5678"
+      - "${DISCOVER_DOCKER_IP_OVERRIDE:-0.0.0.0}:${DISCOVER_DOCKER_PORT_OVERRIDE:-8080}:8080"
+    volumes:
+      # Mount our codebase on top of the code built into the container so we
+      # can edit the code on our host machine and the changes will apply to our
+      # docker-compose orchestrated running container.
+      - ./web-server/discover:/discover-app/discover
+  frontend-dev:
+    build:
+      context: ./web-client
+      dockerfile: Dockerfile
+    depends_on:
+      - web-server
+    ports:
+      - "${DISCOVER_DOCKER_FRONTEND_DEV_IP_OVERRIDE:-0.0.0.0}:${DISCOVER_DOCKER_FRONTEND_DEV_IP_PORT_OVERRIDE:-3000}:3000"
+    volumes:
+      # Mount our codebase on top of the code built into the container so we
+      # can edit the code on our host machine and the changes will apply to our
+      # docker-compose orchestrated running container.
+      - ./web-client/src:/web-client/src
