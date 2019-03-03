@@ -48,9 +48,9 @@ func main() {
 
 	ctx := context.Background()
 
-	b, err := ioutil.ReadFile("where-is-zakir-key.json")
+	b, err := ioutil.ReadFile(keyPath)
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		log.Fatalf("Unable to read client secret file: %s", err)
 	}
 
 	config, err := google.JWTConfigFromJSON(b, calendar.CalendarReadonlyScope)
